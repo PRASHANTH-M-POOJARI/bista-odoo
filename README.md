@@ -1,0 +1,2 @@
+# bista-odoo
+bista repository 
