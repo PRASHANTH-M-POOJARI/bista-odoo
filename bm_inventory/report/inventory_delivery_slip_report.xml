@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="stock_report_delivery_document1" inherit_id="stock.report_delivery_document">
+        <xpath expr="//div[@class='row mt32 mb32']" position="replace">
+            <div style="height:30px">
+            </div>
+            <div class="row mt48 mb32">
+                <div class="col-auto" name="div_sched_date">
+                    <strong>Shipping Date:</strong>
+                    <t t-if="o.state == 'done'">
+                        <p t-field="o.date_done"/>
+                    </t>
+                    <t t-if="o.state != 'done'">
+                        <p t-field="o.scheduled_date"/>
+                    </t>
+                </div>
+            </div>
+            <div style="height:30px">
+            </div>
+        </xpath>
+        <xpath expr="//table[@class='table table-sm']" position="replace">
+            <table class="table table-sm" name="stock_move_table">
+                <div style="border: 1px solid black;">
+                    <thead>
+                        <tr>
+                            <th name="th_product">
+                                <strong>Product</strong>
+                            </th>
+                            <th name="th_product">
+                                <strong>LOT/SERIAL NUMBER</strong>
+                            </th>
+                            <th name="th_sm_quantity">
+                                <strong>Quantity</strong>
+                            </th>
+                            <th class="text-right" name="th_product">
+                                <strong>Product Barcode</strong>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-set="lines" t-value="o.move_lines.filtered(lambda x: x.product_uom_qty)"/>
+                        <tr t-foreach="lines" t-as="move">
+                            <td>
+                                <span t-field="move.product_id"/>
+                                <p t-if="move.description_picking != move.product_id.name">
+                                    <span t-field="move.description_picking"/>
+                                </p>
+                            </td>
+                            <td>
+                                <t>
+                                    <span t-field="move.lot_ids"/>
+                                </t>
+                            </td>
+                            <td>
+                                <span t-field="move.product_uom_qty"/>
+                                <span t-field="move.product_uom"/>
+                            </td>
+                            <td class="text-right">
+                                <img alt="Barcode"
+                                     t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('EAN13', o.origin, 600, 150)"
+                                     style="width:100px;height:50px"/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </div>
+            </table>
+        </xpath>
+        <xpath expr="//table[@class='table table-sm mt48']" position="replace">
+        </xpath>
+    </template>
+</odoo>
+

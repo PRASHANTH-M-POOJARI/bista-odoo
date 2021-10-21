@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="stock_report_picking_operations1" inherit_id="stock.report_picking">
+        <xpath expr="//div[@class='row mt48 mb32']" position="replace">
+            <div style="height:30px">
+            </div>
+            <div class="row mt48 mb32">
+                <div class="row">
+                    <div class="col-auto">
+                        <div class="col-4" name="div_state">
+                            <strong>Status:</strong>
+                            <p t-field="o.state"/>
+                        </div>
+                    </div>
+                    <div class="col-4"/>
+                    <div class="col col-lg-2" name="div_sched_date">
+                        <strong>Scheduled Date:</strong>
+                        <p t-field="o.scheduled_date"/>
+                    </div>
+                </div>
+            </div>
+            <div style="height:30px">
+            </div>
+        </xpath>
+        <xpath expr="//table[@class='table table-sm']" position="replace">
+            <table class="table table-sm">
+                <div style="border: 1px solid black;">
+                    <thead>
+                        <tr>
+                            <th name="th_product">
+                                <strong>Product</strong>
+                            </th>
+                            <th>
+                                <strong>Quantity</strong>
+                            </th>
+                            <th name="th_from" >
+                                <strong>From</strong>
+                            </th>
+                            <th name="th_to">
+                                <strong>To</strong>
+                            </th>
+                            <th class="text-center" name="th_serial_number">
+                                <strong>Lot/Serial Number</strong>
+                            </th>
+                            <th class="text-right" name="th_product">
+                                <strong>Product Barcode</strong>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="o.move_ids_without_package" t-as="move">
+                            <t t-foreach="move.move_line_ids.sorted(key=lambda ml: ml.location_id.id)" t-as="ml">
+                                <tr>
+                                    <td>
+                                        <span t-field="ml.product_id.display_name"/>
+                                        <br/>
+                                        <span t-field="ml.product_id.description_picking"/>
+                                    </td>
+                                    <td>
+                                        <span t-if="o.state != 'done'" t-field="ml.product_uom_qty"/>
+                                        <span t-if="o.state == 'done'" t-field="ml.qty_done"/>
+                                        <span t-field="ml.product_uom_id" groups="uom.group_uom"/>
+
+                                    </td>
+                                    <td>
+                                        <span t-esc="ml.location_id.display_name"/>
+                                        <t t-if="ml.package_id">
+                                            <span t-field="ml.package_id"/>
+                                        </t>
+                                    </td>
+                                    <td>
+                                        <t>
+                                            <span t-field="ml.location_dest_id"/>
+                                        </t>
+                                    </td>
+                                    <td class="col-2">
+                                        <img alt="Barcode"
+                                             t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s&amp;humanreadable=1' % ('Code128', ml.lot_id.name or ml.lot_name, 400, 100)" style="width:60%;height:35px;"/>
+                                    </td>
+                                    <td class="text-right">
+                                        <img alt="Barcode"
+                                             t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('EAN13', o.origin, 600, 150)"
+                                             style="width:100px;height:50px"/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </t>
+                    </tbody>
+                </div>
+            </table>
+        </xpath>
+    </template>
+</odoo>
